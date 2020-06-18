@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en-GB" dir="ltr">
+<head>
+	<title>Super Maths Quick Quiz</title>
+	<style>
+		body { 
+			padding: 32px; 
+			font-size: 22px; 
+			font-family: Arial;
+			background: #449;
+			color: #EEE;
+		}
+		#answer { background: #449; font-size: 22px; color: #FFF;}
+		h1 { color: #EE4; }
+		p { margin: 3em 0; }
+	</style>
+</head>
+<body>
+<h1>Super Maths Quick Quiz</h1>
+<form>
+	<p>
+		<select id="base" name="base">
+			<option value="2">2 Times Table</option>
+			<option value="3">3 Times Table</option>
+			<option value="4">4 Times Table</option>
+			<option value="5">5 Times Table</option>
+			<option value="6">6 Times Table</option>
+			<option value="7">7 Times Table</option>
+			<option value="8">8 Times Table</option>
+			<option value="9">9 Times Table</option>
+			<option value="10">10 Times Table</option>
+		</select>
+		<select id="operator" name="operator">
+			<option value="add">Addition</option>
+			<option value="sub">Subtraction</option>
+			<option value="mul" selected>Multiplication</option>
+			<option value="div">Division</option>
+		</select>
+		<button id="start" type="button"> Start </button>
+
+	</p>
+	<p>
+		<span id="qtitle">Question 1 :</span><br>
+		<label id="question" for="answer">Get Ready </label>
+		<span> = </span>
+		<input id="answer" name="answer" />
+		<button id="go" type="submit"> Go </button>
+	</p>
+	<p>
+		<span id="msg"></span>
+	</p>
+</form>
+
+
+
+<script>
+
+(function() {
+	var base = 2, count=0, time=0, value=0, total=10, correct=0, answer=0, operator="mul";
+
+	function node(n) {
+		return n[0] === '#'?
+			document.getElementById(n.substr(1)):
+			document.getElementsByTagName(n)[0];
+	}
+
+	function start() {
+		count = 0;
+		time = new Date().getTime();
+		correct = 0;
+		base = parseInt(node("#base").value);
+		operator = node("#operator").value;
+		next();
+	}
+	
+	function next() {
+		node("#qtitle").innerText = "Question " + (count+1) + " :";
+		node("#answer").value = "";
+		node("#answer").focus();
+		node("#msg").innerText = "";
+		node("#go").disabled = false;
+		value = Math.floor(Math.random() * 10);
+		var flip = Math.floor(Math.random() * 100) % 2 === 0;
+
+		if( operator === "mul" ) {
+			answer = base * value;
+			node("#question").innerText = flip? 
+				(base + " x " + value): 
+				(value + " x " + base);
+
+		} else if( operator === "div" ) {
+			answer = value;
+			node("#question").innerHTML = (value*base) + " &divide; " + base;
+
+		} else if( operator === "add" ) {
+			value = Math.floor(Math.random() * 100) % (base * 10);
+			answer = value + base;
+			node("#question").innerHTML = flip? 
+				(value + " + " + base):
+				(base + " + " + value);
+
+		} else if( operator === "sub" ) {
+			value = Math.floor(Math.random() * 100) % base;
+			answer = value - base;
+			node("#question").innerHTML = value + " - " + base;
+
+		}
+	} // next
+
+	function finish() {
+		var finish = Math.floor((new Date().getTime() - time) / 1000);
+		node("#qtitle").innerText = "Finished";
+		node("#start").disabled = false;
+		var mins = Math.floor(finish / 60), secs = finish % 60;
+		node("#msg").innerText = 
+			"You have scored " + correct + " out of " + total + 
+			" in " + mins + " minutes " + secs + " seconds";
+	}
+
+	// Start here
+
+	node("form").addEventListener( "submit", function(e) {
+		e.preventDefault();
+		node("#go").disabled = true;
+		count++;
+		var result = node("#answer").value;
+		if( parseInt(result) === answer ) {
+			correct++;
+			node("#msg").innerText = "Correct";
+		} else {
+			node("#msg").innerText = "Wrong, the answer was " + answer;
+		}
+		setTimeout( ( count < total? next: finish), 1500 );
+	});
+
+	node("#start").addEventListener( "click", function(e){
+		this.disabled = true;
+		start();
+	});
+
+	node("#go").disabled = true;
+})();
+
+</script>
+</body>
+</html>
